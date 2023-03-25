@@ -1,5 +1,6 @@
 using Core.Entities;
 using Core.Interfaces;
+using Core.Views;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,14 @@ namespace api.Controllers
             return Ok(product);
         }
         
-        [HttpGet()]
+        [HttpGet("lookup")]
+        public async Task<ActionResult<IReadOnlyList<ProductLookup>>> GetProductsLookup()
+        {
+            var products = await _productRepository.GetProductsLookupAsync();
+            return Ok(products);
+        }
+
+                [HttpGet()]
         public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
         {
             var products = await _productRepository.GetProductsAsync();
