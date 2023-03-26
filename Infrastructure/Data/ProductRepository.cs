@@ -23,12 +23,21 @@ namespace Infrastructure.Data
             return await _context.Products.FindAsync(id);
         }
 
+        public async Task<Product> GetProductByIdEagerAsync(int id)
+        {
+            return await _context
+                .Products
+                .Include(x => x.ProductBrand)
+                .Include(x => x.ProductType)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<IReadOnlyList<Product>> GetProductsAsync()
         {
             return await _context.Products.ToListAsync();
         }
 
-        public async Task<IReadOnlyList<Product>> GetProductsExtendedAsync()
+        public async Task<IReadOnlyList<Product>> GetProductsEagerAsync()
         {
             var result =
                 await _context
@@ -51,7 +60,11 @@ namespace Infrastructure.Data
 
         public async Task<IReadOnlyList<ProductLookup>> GetProductsLookupAsync()
         {
-            var result = await _context.Products.Select(ProductLookup.Projector).ToListAsync();
+            var result =
+                await _context
+                    .Products
+                    .Select(ProductLookup.Projector)
+                    .ToListAsync();
             return result;
         }
     }

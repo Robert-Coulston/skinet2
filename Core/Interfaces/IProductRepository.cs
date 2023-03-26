@@ -7,12 +7,13 @@ using Core.Views;
 
 namespace Core.Interfaces
 {
-    public interface IProductRepository
+    public interface IProductRepository 
     {
         Task<Product> GetProductByIdAsync(int id);
+        Task<Product> GetProductByIdEagerAsync(int id);
         Task<IReadOnlyList<Product>> GetProductsAsync();
         Task<IReadOnlyList<ProductLookup>> GetProductsLookupAsync();
-        Task<IReadOnlyList<Product>> GetProductsExtendedAsync();
+        Task<IReadOnlyList<Product>> GetProductsEagerAsync();
         Task<IReadOnlyList<ProductBrand>> GetProductBrandsAsync();
         Task<IReadOnlyList<ProductType>> GetProductTypesAsync();
     }
