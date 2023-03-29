@@ -63,7 +63,7 @@ namespace Infrastructure.Data
             var result =
                 await _context
                     .Products
-                    .Select(ProductLookup.Projector)
+                    .Select(ProductLookup.ProjectorExpression)
                     .ToListAsync();
             return result;
         }

@@ -28,6 +28,8 @@
     },
     "peacock.color": "#dd0531",
     "cSpell.words": [
-        "Autoincrement"
-    ]
+        "Autoincrement",
+        "Dtos"
+    ],
+    "csharpextensions.privateMemberPrefix": "_"
 }

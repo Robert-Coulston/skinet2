@@ -18,13 +18,13 @@ namespace Core.Views
         public string Type { get; set; }
 
         public static readonly Expression<Func<Product, ProductLookup>>
-            Projector =
-                (x) =>
+            ProjectorExpression =
+                (product) =>
                     new ProductLookup {
-                        Id = x.Id,
-                        Name = x.Name,
-                        Brand = x.ProductBrand.Name,
-                        Type = x.ProductType.Name
+                        Id = product.Id,
+                        Name = product.Name,
+                        Brand = product.ProductBrand.Name,
+                        Type = product.ProductType.Name
                     };
     }
 }
