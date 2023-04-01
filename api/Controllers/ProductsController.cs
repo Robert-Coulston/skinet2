@@ -1,4 +1,5 @@
 using api.Dtos;
+using api.Errors;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -43,12 +44,17 @@ namespace api.Controllers
         }
 
         [HttpGet("{id}/eager")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductDto>> GetProductEager(int id)
         {
             // var product = await _productRepository.GetProductByIdEagerAsync(id);
             var spec = new ProductsEagerSpecification(id);
             var product = await _prodRepository.GetEntityWithSpec(spec);
-            var response = ProductDto.Projector(product);
+            if (product == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
             var mapped = _mapper.Map<Product, ProductDto>(product);
             return Ok(mapped);
         }
