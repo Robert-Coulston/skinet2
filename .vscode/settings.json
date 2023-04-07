@@ -29,6 +29,7 @@
     "peacock.color": "#dd0531",
     "cSpell.words": [
         "Autoincrement",
+        "datepicker",
         "Dtos"
     ],
     "csharpextensions.privateMemberPrefix": "_"
