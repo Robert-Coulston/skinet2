@@ -1,5 +1,6 @@
 using api.Dtos;
 using api.Errors;
+using api.Helpers;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -21,7 +22,7 @@ namespace api.Controllers
 
         public ProductsController(
             IMapper mapper,
-            IProductRepository productRepository, 
+            IProductRepository productRepository,
             IGenericRepository<Product> prodRepository,
             IGenericRepository<ProductBrand> prodBrandRepository,
             IGenericRepository<ProductType> prodTypeRepository
@@ -67,7 +68,7 @@ namespace api.Controllers
             return Ok(products);
         }
 
-        [HttpGet()] 
+        [HttpGet()]
         public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
         {
             var products = await _productRepository.GetProductsAsync();
@@ -75,15 +76,18 @@ namespace api.Controllers
         }
 
         [HttpGet("eager")]
-        public async Task<ActionResult<IReadOnlyList<ProductDto>>> GetProductsEager()
+        public async Task<ActionResult<Pagination<IReadOnlyList<ProductDto>>>> GetProductsEager([FromQuery]ProductSpecParams productParams)
         {
             // var products = await _productRepository.GetProductsEagerAsync();
-            var spec = new ProductsEagerSpecification();
+            var countSpec = new ProductsEagerCountSpecification(productParams);
+            var totalItems = await _prodRepository.CountAsync(countSpec);
+            
+            var spec = new ProductsEagerSpecification(productParams);
             var products = await _prodRepository.ListAsync(spec);
-
-            // var response = products.Select(ProductDto.Projector);
-            var response = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDto>>(products);
-            return Ok(response);
+            
+            var data =  _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDto>>(products);
+            
+            return Ok(new Pagination<ProductDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
         }
 
         [HttpGet("brands")]
