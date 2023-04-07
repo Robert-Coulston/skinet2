@@ -8,11 +8,22 @@ namespace Core.Specifications
 {
     public class ProductsEagerSpecification : BaseSpecification<Product>
     {
-        public ProductsEagerSpecification(ProductSpecParams productParams)
-        : base(product =>
-            (!productParams.BrandId.HasValue || product.ProductBrandId == productParams.BrandId)
-            && (!productParams.TypeId.HasValue || product.ProductTypeId == productParams.TypeId)
-        )
+        public ProductsEagerSpecification(ProductSpecParams productParams) :
+            base(
+                product =>
+                    (
+                    !productParams.BrandId.HasValue ||
+                    product.ProductBrandId == productParams.BrandId
+                    ) &&
+                    (
+                    !productParams.TypeId.HasValue ||
+                    product.ProductTypeId == productParams.TypeId
+                    ) &&
+                    (
+                    string.IsNullOrEmpty(productParams.Search) ||
+                    product.Name.ToLower().Contains(productParams.Search)
+                    )
+            )
         {
             AddInclude(x => x.ProductType);
             AddInclude(x => x.ProductBrand);
@@ -39,11 +50,10 @@ namespace Core.Specifications
                         }
                 }
             }
-
-
         }
 
-        public ProductsEagerSpecification(int id) : base(x => x.Id == id)
+        public ProductsEagerSpecification(int id) :
+            base(x => x.Id == id)
         {
             AddInclude(x => x.ProductType);
             AddInclude(x => x.ProductBrand);

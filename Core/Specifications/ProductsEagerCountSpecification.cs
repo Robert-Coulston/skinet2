@@ -8,10 +8,24 @@ namespace Core.Specifications
 {
     public class ProductsEagerCountSpecification : BaseSpecification<Product>
     {
-        public ProductsEagerCountSpecification(ProductSpecParams productParams)
-        : base(x =>
-            (!productParams.BrandId.HasValue || x.ProductBrandId == productParams.BrandId) && (!productParams.TypeId.HasValue || x.ProductTypeId == productParams.TypeId)
-        )
+        public ProductsEagerCountSpecification(
+            ProductSpecParams productParams
+        ) :
+            base(
+                product =>
+                    (
+                    !productParams.BrandId.HasValue ||
+                    product.ProductBrandId == productParams.BrandId
+                    ) &&
+                    (
+                    !productParams.TypeId.HasValue ||
+                    product.ProductTypeId == productParams.TypeId
+                    ) &&
+                    (
+                    string.IsNullOrEmpty(productParams.Search) ||
+                    product.Name.ToLower().Contains(productParams.Search)
+                    )
+            )
         {
         }
     }
