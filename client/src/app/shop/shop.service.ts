@@ -14,6 +14,6 @@ export class ShopService {
   baseUrl = 'https://localhost:5001/api/';
 
   getProducts(): Observable<Pagination<Product>> {
-    return this.http.get<Pagination<Product>>(this.baseUrl + 'products/eager?pageIndex=2&pageSize=3');
+    return this.http.get<Pagination<Product>>(this.baseUrl + 'products/eager?pageIndex=1&pageSize=50');
   }
 }
