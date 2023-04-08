@@ -30,7 +30,8 @@
     "cSpell.words": [
         "Autoincrement",
         "datepicker",
-        "Dtos"
+        "Dtos",
+        "Skinet"
     ],
     "csharpextensions.privateMemberPrefix": "_"
 }
