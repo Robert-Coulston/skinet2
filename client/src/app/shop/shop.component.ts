@@ -1,21 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ShopService } from './shop.service';
 import { Pagination } from '../shared/models/Pagination';
 import { Product } from '../shared/models/Product';
 import { Brand } from '../shared/models/brand';
 import { Type } from '../shared/models/type';
 import { ShopParams } from '../shared/models/shipParams';
+import { ElementRef } from '@angular/core';
+
+
+export type sortOptionsType = 'Alphabetical' | 'Price: Low to High' | 'Price: High to Low';
+
+export interface SortOptionsReference {
+  name: sortOptionsType;
+  value: string;
+}
 
 @Component({
   selector: 'app-shop',
   templateUrl: './shop.component.html',
   styleUrls: ['./shop.component.scss'],
 })
-export class ShopComponent implements OnInit {
+export class ShopComponent implements OnInit, AfterViewInit {
   productPage: Pagination<Product> = {
     pageIndex: 0,
     pageSize: 0,
     count: 0,
+    data: null,
   };
 
   brands: Brand[] = [];
@@ -24,7 +34,10 @@ export class ShopComponent implements OnInit {
   shopParams: ShopParams = new ShopParams();
   totalCount = 0;
 
-  sortOptions = [
+  @ViewChild('search')
+  searchTerm?: ElementRef;
+
+  sortOptions : SortOptionsReference[] = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to High', value: 'priceAsc' },
     { name: 'Price: High to Low', value: 'priceDesc' },
@@ -49,7 +62,6 @@ export class ShopComponent implements OnInit {
         this.totalCount = productPage.count;
       },
       error: (error) => console.log(error),
-      complete: () => console.log('getProducts request completed'),
     });
   }
 
@@ -59,7 +71,6 @@ export class ShopComponent implements OnInit {
         this.brands = [{ id: 0, name: 'All' }, ...brands];
       },
       error: (error) => console.log(error),
-      complete: () => console.log('getBrands request completed'),
     });
   }
 
@@ -69,17 +80,19 @@ export class ShopComponent implements OnInit {
         this.types = [{ id: 0, name: 'All' }, ...types];
       },
       error: (error) => console.log(error),
-      complete: () => console.log('getTypes request completed'),
     });
   }
 
   onBrandSelected(brandId: number) {
     this.shopParams.brandId = brandId;
+    this.shopParams.pageNumber = 1;
+    //this.shopParams = {...this.shopParams, brandId: brandId};
     this.getProducts();
   }
 
   onTypeSelected(typeId: number) {
     this.shopParams.typeId = typeId;
+    this.shopParams.pageNumber = 1;
     this.getProducts();
   }
 
@@ -88,13 +101,32 @@ export class ShopComponent implements OnInit {
     this.getProducts();
   }
 
-  onPageChanged(event: any) {
-    if (this.shopParams.pageNumber !== event.page) {
-      this.shopParams.pageNumber = event.page;
-      this.shopParams.pageSize = event.itemsPerPage;
+  pageChanged(params: ShopParams) {
+    this.shopParams = params;
+    this.getProducts();
+  }
+
+  onSearch() {
+    this.shopParams.search = this.searchTerm?.nativeElement.value ?? '';
+    this.shopParams.pageNumber = 1;
+    this.getProducts();
+  }
+  onSearchInput(event: any) {
+    if (event.code == 'Enter') {
+      this.shopParams.pageNumber = 1;
+      this.shopParams.search = this.searchTerm?.nativeElement.value ?? '';
       this.getProducts();
     }
   }
 
+  onReset() {
+    this.totalCount = 0;
+    this.searchTerm!.nativeElement.value = '';
+    this.shopParams = new ShopParams();
+    this.getProducts();
+  }
+
   constructor(private shopService: ShopService) {}
+  ngAfterViewInit(): void {
+  }
 }
