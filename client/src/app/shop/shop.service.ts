@@ -33,9 +33,15 @@ export class ShopService {
       { params }
     );
   }
+
+  getProduct(productId: number): Observable<Product> {
+    return this.http.get<Product>(this.baseUrl + `products/${productId}/eager`);
+  }
+
   getBrands(): Observable<Brand[]> {
     return this.http.get<Brand[]>(this.baseUrl + 'products/brands');
   }
+
   getTypes(): Observable<Type[]> {
     return this.http.get<Type[]>(this.baseUrl + 'products/types');
   }
