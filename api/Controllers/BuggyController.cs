@@ -46,7 +46,6 @@ namespace api.Controllers
             
             return BadRequest(new ApiResponse(400));
         }
-
         [HttpGet("bad-request/{id}")]
         public ActionResult GetBadRequest(int id)
         {
