@@ -32,6 +32,7 @@
         "datepicker",
         "Dtos",
         "Skinet",
+        "titlecase",
         "Toastr"
     ],
     "csharpextensions.privateMemberPrefix": "_"
