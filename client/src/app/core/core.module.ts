@@ -8,6 +8,7 @@ import { ServerErrorComponent } from './server-error/server-error.component';
 import { ToastrModule } from 'ngx-toastr';
 import { SectionHeaderComponent } from './section-header/section-header.component';
 import { BreadcrumbModule } from 'xng-breadcrumb';
+import { NgxSpinnerComponent, NgxSpinnerModule } from 'ngx-spinner';
 
 
 
@@ -27,9 +28,10 @@ import { BreadcrumbModule } from 'xng-breadcrumb';
       preventDuplicates: true
     }),
     BreadcrumbModule,
+    NgxSpinnerModule,
   ],
   exports: [
-    NavBarComponent, SectionHeaderComponent
+    NavBarComponent, SectionHeaderComponent, NgxSpinnerComponent
   ]
 })
 export class CoreModule { }

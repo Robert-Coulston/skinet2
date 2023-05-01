@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="row">
+  <div class="row" *ngIf="types.length > 0 && brands.length > 0">
     <section class="col-3">
       <h5 class="text-warning ms-3">Sort</h5>
       <select class="form-select mb-4" (change)="onSortSelected($event)">
@@ -37,9 +37,19 @@
           [shopParams]="shopParams"
         ></app-paging-header>
         <div class="d-flex mt-2">
-          <input (keyup)="onSearchInput($event)" type="text" placeholder="Search" class="form-control me-2" #search/>
-          <button class="btn btn-outline-primary mx-2" (click)="onSearch()">Search</button>
-          <button class="btn btn-outline-primary" (click)="onReset()">Reset</button>
+          <input
+            (keyup)="onSearchInput($event)"
+            type="text"
+            placeholder="Search"
+            class="form-control me-2"
+            #search
+          />
+          <button class="btn btn-outline-primary mx-2" (click)="onSearch()">
+            Search
+          </button>
+          <button class="btn btn-outline-primary" (click)="onReset()">
+            Reset
+          </button>
         </div>
       </div>
       <div class="row row-cols-3 g-3 mb-4" *ngIf="totalCount > 0">
