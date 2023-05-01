@@ -16,7 +16,9 @@ export class ProductDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private breadcrumbService: BreadcrumbService
-  ) {}
+  ) {
+    this.breadcrumbService.set('@productDetails', ' ');
+  }
 
   ngOnInit(): void {
     console.log(this.route);
