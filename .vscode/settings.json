@@ -31,7 +31,9 @@
         "Autoincrement",
         "datepicker",
         "Dtos",
-        "Skinet"
+        "Skinet",
+        "titlecase",
+        "Toastr"
     ],
     "csharpextensions.privateMemberPrefix": "_"
 }

@@ -3,6 +3,7 @@ import { ShopService } from '../shop.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Product } from 'src/app/shared/models/Product';
+import { BreadcrumbService } from 'xng-breadcrumb';
 
 @Component({
   selector: 'app-product-details',
@@ -13,8 +14,11 @@ export class ProductDetailsComponent implements OnInit {
   constructor(
     private shopService: ShopService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private breadcrumbService: BreadcrumbService
+  ) {
+    this.breadcrumbService.set('@productDetails', ' ');
+  }
 
   ngOnInit(): void {
     console.log(this.route);
@@ -29,6 +33,9 @@ export class ProductDetailsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.product$ = this.shopService.getProduct(+id);
+      this.product$.subscribe((p) => {
+        this.breadcrumbService.set('@productDetails', p.name);
+      });
     }
   }
 }
