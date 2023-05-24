@@ -1,17 +1,22 @@
 import { Component, Input } from '@angular/core';
+import { BasketService } from 'src/app/basket/basket.service';
 import { Product } from 'src/app/shared/models/Product';
 
 @Component({
   selector: 'app-product-item',
   templateUrl: './product-item.component.html',
-  styleUrls: ['./product-item.component.scss']
+  styleUrls: ['./product-item.component.scss'],
 })
 export class ProductItemComponent {
   @Input()
-  product?: Product
+  product?: Product;
 
-  constructor() {
+  constructor(private basketService: BasketService) {}
 
+  addItemToBasket() {
+    console.log("Add item to basket");
+    if (this.product) {
+      this.basketService.addItemToBasket(this.product);
+    }
   }
-
 }
