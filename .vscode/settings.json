@@ -5,11 +5,16 @@
             "driver": "SQLite",
             "name": "skinet",
             "database": "${workspaceFolder:skinet2}/api/skinet.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "identity",
+            "database": "${workspaceFolder:skinet2}/api/identity.db"
         }
     ],
     "workbench.colorCustomizations": {
         "tab.activeBorderTop": "#FFFFFF",
-        "tab.activeBorder": "#FFFFFF",
         "tab.activeBorderLeft": "#FFFFFF",
         "activityBar.activeBackground": "#fa1b49",
         "activityBar.background": "#fa1b49",
