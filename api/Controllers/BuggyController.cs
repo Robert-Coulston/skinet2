@@ -1,5 +1,6 @@
 using api.Errors;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -23,6 +24,13 @@ namespace api.Controllers
             }
             
             return Ok();
+        }
+
+        [HttpGet("test-auth")]
+        [Authorize]
+        public ActionResult<string> GetSecretText()
+        {
+            return "You have provided a valid token";
         }
 
         [HttpGet("server-error")]
