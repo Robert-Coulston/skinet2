@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../shared/models/user';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserLogin } from './entities';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,21 @@ export class AccountService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  login(values: any) {
+  loadCurrentUser(token: string) {
+    let headers = new HttpHeaders();
+    headers = headers.set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<User>(this.baseUrl + 'account', {headers}).pipe(
+      tap(user => {
+        localStorage.setItem('token', user.token);
+        this.currentUserSource.next(user);
+      })
+    )
+  }
+
+  login(values: UserLogin): Observable<User> {
     return this.http.post<User>(this.baseUrl + 'account/login', values).pipe(
-      map(user => {
+      tap(user => {
         localStorage.setItem('token', user.token);
         this.currentUserSource.next(user);
       })
