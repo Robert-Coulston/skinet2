@@ -12,3 +12,15 @@ export interface Address {
   state: string;
   zipCode: string;
 }
+
+export interface UserLogin {
+  email: string,
+  password: string
+}
+
+export interface UserRegister {
+  displayName:string;
+  email: string,
+  password: string
+}
+

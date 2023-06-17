@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../account.service';
-import { Router } from '@angular/router';
+import { UserLogin } from 'src/app/shared/models/user';
+
 
 @Component({
   selector: 'app-login',
@@ -9,17 +11,20 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  loginForm: FormGroup = new FormGroup({
+  loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', Validators.required)
-  });
+  })
+  returnUrl: string;
 
-  constructor(private accountService: AccountService, private router: Router) {}
+  constructor(private accountService: AccountService, private router: Router,
+    private activatedRoute: ActivatedRoute) {
+      this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] ?? '/shop'
+  }
 
   onSubmit() {
-    console.log(this.loginForm);
-    this.accountService.login(this.loginForm.value).subscribe({
-      next: () => this.router.navigateByUrl('/shop')
+    this.accountService.login(this.loginForm.value as UserLogin).subscribe({
+      next: () => this.router.navigateByUrl(this.returnUrl)
     })
   }
 }
