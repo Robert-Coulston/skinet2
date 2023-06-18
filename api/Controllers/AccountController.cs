@@ -48,7 +48,7 @@ namespace api.Controllers
         [HttpGet("address")]
         public async Task<ActionResult<AddressDto>> GetUserAddress()
         {
-            var email = HttpContext.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+            var email = HttpContext.User?.RetrieveEmailFromPrincipal();
             var user = await _userManager.FindUserByClaimsPrincipleWithAddress(User); // Extension method to include the Address relationship to User
             var mapped = _mapper.Map<Address, AddressDto>(user.Address);
 
