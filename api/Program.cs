@@ -42,18 +42,23 @@ var userManager = services.GetRequiredService<UserManager<AppUser>>();
 
 var logger = services.GetRequiredService<ILogger<Program>>();
 
-try
-{
-    await context.Database.MigrateAsync();
-    await StoreSeedData.SeedAsync(context);
-
-    await identityContext.Database.MigrateAsync();
-    await AppIdentitySeedData.SeedAsync(userManager);
-
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "An error occurred during migration");
-}
+await DatabaseMigration(context, identityContext, userManager, logger);
 
 app.Run();
+
+static async Task DatabaseMigration(StoreContext context, AppIdentityDbContext identityContext, UserManager<AppUser> userManager, ILogger<Program> logger)
+{
+    try
+    {
+        await context.Database.MigrateAsync();
+        await StoreSeedData.SeedAsync(context);
+
+        await identityContext.Database.MigrateAsync();
+        await AppIdentitySeedData.SeedAsync(userManager);
+
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred during migration");
+    }
+}
