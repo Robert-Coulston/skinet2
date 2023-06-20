@@ -41,6 +41,7 @@
         "Autoincrement",
         "datepicker",
         "Dtos",
+        "Hashtable",
         "Hmac",
         "Skinet",
         "titlecase",
