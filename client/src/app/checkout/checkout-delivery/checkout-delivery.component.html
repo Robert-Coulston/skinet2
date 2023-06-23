@@ -1,3 +1,11 @@
+<div class="d-flex justify-content-between flex-row mt-3">
+  <button class="btn btn-outline-primary" cdkStepperPrevious>
+    Back to Address <i class="fa fa-angle-left"></i>
+  </button>
+  <button class="btn btn-primary" cdkStepperNext>
+    Go to Review <i class="fa fa-angle-right"></i>
+  </button>
+</div>
 <div class="mt-4" *ngIf="checkoutForm" [formGroup]="checkoutForm">
   <div class="row" formGroupName="deliveryForm">
     <div class="col-6 form-group" *ngFor="let method of deliveryMethods">
@@ -7,6 +15,7 @@
         [value]="method.id"
         id="{{ method.id }}"
         formControlName="deliveryMethod"
+        (click)="setShippingPrice(method)"
       />
       <label for="{{ method.id }}" class="form-check-label ms-2 mb-3">
         <strong>{{ method.shortName }} - {{ method.price | currency }}</strong>

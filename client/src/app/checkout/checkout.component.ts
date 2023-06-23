@@ -1,14 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AccountService } from '../account/account.service';
 
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss']
 })
-export class CheckoutComponent {
-  constructor(private fb: FormBuilder) {
+export class CheckoutComponent implements OnInit {
+  constructor(private fb: FormBuilder, private accountService: AccountService) {
 
+  }
+  ngOnInit(): void {
+    this.getAddressFormValues();
+  }
+
+  getAddressFormValues() {
+    this.accountService.getUserAddress().subscribe(x => {
+      x && this.checkoutForm.get('addressForm')?.patchValue(x);
+    })
   }
 
   checkoutForm: FormGroup = this.fb.group({
