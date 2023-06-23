@@ -16,6 +16,8 @@ export class NavBarComponent implements OnInit {
     this.basketService.basketSource$.subscribe((b) => {
       if (b != null) {
         this.cartCount = this.getCount(b.items);
+      } else {
+        this.cartCount = 0;
       }
     });
   }
