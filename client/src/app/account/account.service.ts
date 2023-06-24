@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class AccountService {
 
-  baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
   private currentUserSource = new ReplaySubject<User | null>(1);
   currentUser$ = this.currentUserSource.asObservable();
 
