@@ -6,6 +6,10 @@ import * as cuid from 'cuid';
 export interface Basket {
   id: string;
   items: BasketItem[];
+  deliveryMethodId: number | null;
+  clientSecret: string | null;
+  paymentIntentId: string | null;
+  shippingPrice: number;
 }
 
 export interface BasketItem {
@@ -26,6 +30,7 @@ export class Basket implements Basket {
 
   id: string;
   items: BasketItem[];
+  shippingPrice: number = 0;
 }
 
 export interface BasketTotals {
