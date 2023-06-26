@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./test-error.component.scss'],
 })
 export class TestErrorComponent {
-  baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
   validationErrors: string[] = [];
 
   constructor(private http: HttpClient) {}
@@ -35,7 +35,7 @@ export class TestErrorComponent {
   }
   get400ValidationError() {
     this.http.get(this.baseUrl + 'products/nine').subscribe({
-      next: (response) => console.log(response),
+      //next: (response) => console.log(response),
       error: (error) => {
         this.validationErrors = error.errors;
       },

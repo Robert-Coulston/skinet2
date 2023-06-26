@@ -1,8 +1,12 @@
 using api.Errors;
 using api.Extensions;
 using api.Middleware;
+using Core.Entities.Identity;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Identity;
+using Infrastructure.Identity.SeedData;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddSwaggerDocumentation();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 var app = builder.Build();
@@ -19,27 +26,39 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerDocumentation();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 var context = services.GetRequiredService<StoreContext>();
+var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+var userManager = services.GetRequiredService<UserManager<AppUser>>();
+
 var logger = services.GetRequiredService<ILogger<Program>>();
 
-try
-{
-    await context.Database.MigrateAsync();
-    await StoreSeedData.SeedAsync(context);
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "An error occurred during migration");
-}
+await DatabaseMigration(context, identityContext, userManager, logger);
 
 app.Run();
+
+static async Task DatabaseMigration(StoreContext context, AppIdentityDbContext identityContext, UserManager<AppUser> userManager, ILogger<Program> logger)
+{
+    try
+    {
+        await context.Database.MigrateAsync();
+        await StoreSeedData.SeedAsync(context);
+
+        await identityContext.Database.MigrateAsync();
+        await AppIdentitySeedData.SeedAsync(userManager);
+
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred during migration");
+    }
+}

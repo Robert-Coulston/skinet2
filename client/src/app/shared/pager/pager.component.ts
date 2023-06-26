@@ -8,7 +8,6 @@ import { ShopParams } from '../models/shipParams';
 })
 export class PagerComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('page on changes :', changes);
   }
   @Input()
   totalCount = 0;

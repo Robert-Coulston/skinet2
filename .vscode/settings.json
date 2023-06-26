@@ -5,9 +5,17 @@
             "driver": "SQLite",
             "name": "skinet",
             "database": "${workspaceFolder:skinet2}/api/skinet.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "identity",
+            "database": "${workspaceFolder:skinet2}/api/identity.db"
         }
     ],
     "workbench.colorCustomizations": {
+        "tab.activeBorderTop": "#FFFFFF",
+        "tab.activeBorderLeft": "#FFFFFF",
         "activityBar.activeBackground": "#fa1b49",
         "activityBar.background": "#fa1b49",
         "activityBar.foreground": "#e7e7e7",
@@ -28,9 +36,13 @@
     },
     "peacock.color": "#dd0531",
     "cSpell.words": [
+        "Authorisation",
+        "authorised",
         "Autoincrement",
         "datepicker",
         "Dtos",
+        "Hashtable",
+        "Hmac",
         "Skinet",
         "titlecase",
         "Toastr"
