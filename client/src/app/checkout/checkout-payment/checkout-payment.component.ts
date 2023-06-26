@@ -8,12 +8,14 @@ import { Order, OrderToCreate } from 'src/app/shared/models/order';
 import { FormGroup } from '@angular/forms';
 import { NavigationExtras, Router } from '@angular/router';
 import {
+  PaymentIntentResult,
   Stripe,
   StripeCardCvcElement,
   StripeCardExpiryElement,
   StripeCardNumberElement,
   loadStripe,
 } from '@stripe/stripe-js';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -31,7 +33,13 @@ export class CheckoutPaymentComponent implements OnInit {
   cardNumber: StripeCardNumberElement | null = null;
   cardExpiry: StripeCardExpiryElement | null = null;
   cardCvc: StripeCardCvcElement | null = null;
+  cardNumberComplete = false;
+  cardExpiryComplete = false;
+  cardCvcComplete = false;
+
   cardErrors: string | null = null;
+
+  submittingOrder: boolean = false;
 
   constructor(
     private basketService: BasketService,
@@ -50,6 +58,7 @@ export class CheckoutPaymentComponent implements OnInit {
           this.cardNumber = elements.create('cardNumber');
           this.cardNumber.mount(this.cardNumberElement?.nativeElement);
           this.cardNumber.on('change', (event) => {
+            this.cardNumberComplete = event.complete;
             if (event.error) {
               this.cardErrors = event.error.message;
             } else {
@@ -60,6 +69,7 @@ export class CheckoutPaymentComponent implements OnInit {
           this.cardExpiry = elements.create('cardExpiry');
           this.cardExpiry.mount(this.cardExpiryElement?.nativeElement);
           this.cardExpiry.on('change', (event) => {
+            this.cardExpiryComplete = event.complete;
             if (event.error) {
               this.cardErrors = event.error.message;
             } else {
@@ -70,6 +80,7 @@ export class CheckoutPaymentComponent implements OnInit {
           this.cardCvc = elements.create('cardCvc');
           this.cardCvc.mount(this.cardCvcElement?.nativeElement);
           this.cardCvc.on('change', (event) => {
+            this.cardCvcComplete = event.complete;
             if (event.error) {
               this.cardErrors = event.error.message;
             } else {
@@ -81,42 +92,68 @@ export class CheckoutPaymentComponent implements OnInit {
     });
   }
 
-  submitOrder() {
+  paymentFormComplete(): boolean {
+      return this.checkoutForm!.get('paymentForm')!.valid &&
+      this.cardNumberComplete &&
+      this.cardExpiryComplete &&
+      this.cardCvcComplete
+  }
+
+  async submitOrder() {
+    this.submittingOrder = true;
+
     const basket = this.basketService.getCurrentBasketValue();
-    if (!basket) {
-      return;
-    }
+    try {
+      if (!basket) {
+        throw new Error('Unable to get basket');
+      }
+      const createdOrder = await this.createOrder(basket);
+      const paymentIntentResult = await this.confirmPaymentWithStripe(basket);
 
-    const orderToCreate = this.getOrderToCreate(basket);
-    if (!orderToCreate) {
-      return;
+      if (paymentIntentResult.paymentIntent) {
+        this.basketService.deleteBasket(basket);
+        const navigationExtras: NavigationExtras = { state: createdOrder };
+        this.router.navigate(['checkout/success'], navigationExtras);
+        this.toastr.success('Order created');
+      } else {
+        this.toastr.error(paymentIntentResult.error.message); // error from stripe
+      }
+    } catch (error: any) {
+      console.log(error);
+      this.toastr.error(error.message);
+    } finally {
+      this.submittingOrder = false;
     }
+  }
 
-    this.checkoutService.createOrder(orderToCreate).subscribe({
-      next: (order) => {
-        const nameOnCard = this.checkoutForm
-          ?.get('paymentForm')
-          ?.get('nameOnCard')?.value;
-        this.stripe
-          ?.confirmCardPayment(basket.clientSecret!, {
-            payment_method: {
-              card: this.cardNumber! as StripeCardNumberElement,
-              billing_details: { name: nameOnCard },
-            },
-          })
-          .then((result) => {
-            console.log(result);
-            if (result.paymentIntent) {
-              this.basketService.deleteLocalBasket();
-              const navigationExtras: NavigationExtras = { state: order };
-              this.router.navigate(['checkout/success'], navigationExtras);
-              this.toastr.success('Order created');
-            } else {
-              this.toastr.error(result.error.message);
-            }
-          });
+  private async confirmPaymentWithStripe(
+    basket: Basket
+  ): Promise<PaymentIntentResult> {
+    const nameOnCard = this.checkoutForm
+      ?.get('paymentForm')
+      ?.get('nameOnCard')?.value;
+
+    var result = this.stripe?.confirmCardPayment(basket.clientSecret!, {
+      payment_method: {
+        card: this.cardNumber! as StripeCardNumberElement,
+        billing_details: { name: nameOnCard },
       },
     });
+
+    if (!result) {
+      throw new Error('Problem with stripe'); // stripe returned undefined (no PaymentIntentResult)
+    }
+
+    return result;
+  }
+
+  private async createOrder(basket: Basket): Promise<Order> {
+    const orderToCreate = this.getOrderToCreate(basket);
+    if (!orderToCreate) {
+      throw new Error('Insufficient order parameters');
+    }
+
+    return firstValueFrom(this.checkoutService.createOrder(orderToCreate));
   }
 
   getOrderToCreate(basket: Basket): OrderToCreate | null {
@@ -131,6 +168,10 @@ export class CheckoutPaymentComponent implements OnInit {
       return null;
     }
 
-    return { basketId: basket.id, deliveryMethodId, shipToAddress };
+    return {
+      basketId: basket.id,
+      deliveryMethodId,
+      shipToAddress,
+    } as OrderToCreate;
   }
 }
