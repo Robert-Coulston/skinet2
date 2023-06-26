@@ -2,8 +2,11 @@
   <button class="btn btn-outline-primary" cdkStepperPrevious>
     Back to Payment <i class="fa fa-angle-left"></i>
   </button>
-  <button class="btn btn-primary" (click)="submitOrder()">
+  <button class="btn btn-primary" (click)="submitOrder()"
+  [disabled]="paymentFormComplete() !== true"
+  >
     Submit order <i class="fa fa-angle-right"></i>
+    <i *ngIf="submittingOrder" class="fa fa-spinner fa-spin"></i>
   </button>
 </div>
 

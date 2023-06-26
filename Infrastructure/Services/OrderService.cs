@@ -55,10 +55,10 @@ namespace Infrastructure.Services
             {
                 // Create order
                 order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subtotal, basket.PaymentIntentId);
+                _unitOfWork.Repository<Order>().Add(order);
             }
 
             // Save to db
-            _unitOfWork.Repository<Order>().Add(order);
             var result = await _unitOfWork.Complete();
             if (result <= 0)
             {
