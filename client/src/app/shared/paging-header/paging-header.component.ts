@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ShopParams } from '../models/shipParams';
+import { ShopParams } from '../models/shopParams';
 
 @Component({
   selector: 'app-paging-header',

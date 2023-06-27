@@ -1,8 +1,9 @@
-<pagination
+<pagination *ngIf="totalCount > 0 && pageSize"
   [boundaryLinks]="true"
   [totalItems]="totalCount"
-  [itemsPerPage]="shopParams.pageSize"
+  [itemsPerPage]="pageSize"
   [maxSize]="10"
+  [ngModel]="pageNumber"
   previousText="&lsaquo;"
   nextText="&rsaquo;"
   firstText="&laquo;"

@@ -4,11 +4,13 @@ import { Pagination } from '../shared/models/Pagination';
 import { Product } from '../shared/models/Product';
 import { Brand } from '../shared/models/brand';
 import { Type } from '../shared/models/type';
-import { ShopParams } from '../shared/models/shipParams';
+import { ShopParams } from '../shared/models/shopParams';
 import { ElementRef } from '@angular/core';
 
-
-export type sortOptionsType = 'Alphabetical' | 'Price: Low to High' | 'Price: High to Low';
+export type sortOptionsType =
+  | 'Alphabetical'
+  | 'Price: Low to High'
+  | 'Price: High to Low';
 
 export interface SortOptionsReference {
   name: sortOptionsType;
@@ -31,13 +33,13 @@ export class ShopComponent implements OnInit, AfterViewInit {
   brands: Brand[] = [];
   types: Type[] = [];
 
-  shopParams: ShopParams = new ShopParams();
+  shopParams: ShopParams;
   totalCount = 0;
 
   @ViewChild('search')
   searchTerm?: ElementRef;
 
-  sortOptions : SortOptionsReference[] = [
+  sortOptions: SortOptionsReference[] = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to High', value: 'priceAsc' },
     { name: 'Price: High to Low', value: 'priceDesc' },
@@ -54,11 +56,9 @@ export class ShopComponent implements OnInit, AfterViewInit {
   };
 
   getProducts() {
-    this.shopService.getProducts(this.shopParams).subscribe({
+    this.shopService.getProducts().subscribe({
       next: (productPage) => {
         this.productPage = productPage;
-        this.shopParams.pageNumber = productPage.pageIndex;
-        this.shopParams.pageSize = productPage.pageSize;
         this.totalCount = productPage.count;
       },
       error: (error) => console.log(error),
@@ -84,37 +84,57 @@ export class ShopComponent implements OnInit, AfterViewInit {
   }
 
   onBrandSelected(brandId: number) {
-    this.shopParams.brandId = brandId;
-    this.shopParams.pageNumber = 1;
+    const params = this.shopService.getShopParams();
+    params.brandId = brandId;
+    params.pageNumber = 1;
+    this.shopService.setShopParams(params);
+    this.shopParams = params;
     //this.shopParams = {...this.shopParams, brandId: brandId};
     this.getProducts();
   }
 
   onTypeSelected(typeId: number) {
-    this.shopParams.typeId = typeId;
-    this.shopParams.pageNumber = 1;
-    this.getProducts();
-  }
-
-  onSortSelected(event: any) {
-    this.shopParams.sort = event.target.value;
-    this.getProducts();
-  }
-
-  pageChanged(params: ShopParams) {
+    const params = this.shopService.getShopParams();
+    params.typeId = typeId;
+    params.pageNumber = 1;
+    this.shopService.setShopParams(params);
     this.shopParams = params;
     this.getProducts();
   }
 
+  onSortSelected(event: any) {
+    const params = this.shopService.getShopParams();
+    params.sort = event.target.value;
+    this.shopService.setShopParams(params);
+    this.shopParams = params;
+    this.getProducts();
+  }
+
+  pageChanged(event: number) {
+    const params = this.shopService.getShopParams();
+    if (params.pageNumber !== event) {
+      params.pageNumber = event;
+      this.shopService.setShopParams(params);
+      this.shopParams = params;
+      this.getProducts();
+    }
+  }
+
   onSearch() {
-    this.shopParams.search = this.searchTerm?.nativeElement.value ?? '';
-    this.shopParams.pageNumber = 1;
+    let params = this.shopService.getShopParams();
+    params.search = this.searchTerm?.nativeElement.value ?? '';
+    params.pageNumber = 1;
+    this.shopService.setShopParams(params);
+    this.shopParams = params;
     this.getProducts();
   }
   onSearchInput(event: any) {
     if (event.code == 'Enter') {
-      this.shopParams.pageNumber = 1;
-      this.shopParams.search = this.searchTerm?.nativeElement.value ?? '';
+      let params = this.shopService.getShopParams();
+      params.pageNumber = 1;
+      params.search = this.searchTerm?.nativeElement.value ?? '';
+      this.shopService.setShopParams(params);
+      this.shopParams = params;
       this.getProducts();
     }
   }
@@ -122,11 +142,14 @@ export class ShopComponent implements OnInit, AfterViewInit {
   onReset() {
     this.totalCount = 0;
     this.searchTerm!.nativeElement.value = '';
-    this.shopParams = new ShopParams();
+    const params = new ShopParams();
+    this.shopService.setShopParams(params);
+    this.shopParams = params;
     this.getProducts();
   }
 
-  constructor(private shopService: ShopService) {}
-  ngAfterViewInit(): void {
+  constructor(private shopService: ShopService) {
+    this.shopParams = this.shopService.getShopParams();
   }
+  ngAfterViewInit(): void {}
 }
