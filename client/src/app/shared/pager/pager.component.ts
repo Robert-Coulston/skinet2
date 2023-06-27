@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ShopParams } from '../models/shipParams';
+import { ShopParams } from '../models/shopParams';
 
 @Component({
   selector: 'app-pager',
@@ -9,22 +9,15 @@ import { ShopParams } from '../models/shipParams';
 export class PagerComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
   }
-  @Input()
-  totalCount = 0;
 
-  @Input()
-  shopParams: ShopParams = new ShopParams();
+  @Input() totalCount = 0;
+  @Input() pageSize?: number;
+  @Input() pageNumber?: number;
+  @Output() pageChanged = new EventEmitter<number>();
 
-  @Output()
-  pageChanged : EventEmitter<ShopParams> = new EventEmitter();
 
   onPageChanged(event: any) {
     console.log('page changed :', event);
-    if (this.shopParams.pageNumber !== event.page) {
-      this.shopParams.pageNumber = event.page;
-      this.shopParams.pageSize = event.itemsPerPage;
-      this.pageChanged.emit({...this.shopParams});
-    }
+    this.pageChanged.emit(event.page);
   }
-
 }

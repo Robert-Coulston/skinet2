@@ -55,6 +55,7 @@ export class ProductDetailsComponent implements OnInit {
   incrementQuantity() {
     this.quantity++;
   }
+
   decrementQuantity() {
     this.quantity--;
     if (this.quantity < 0) this.quantity = 0;

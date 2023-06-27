@@ -36,6 +36,7 @@ namespace api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Cached(180)]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             // var product = await _productRepository.GetProductByIdAsync(id);
@@ -47,6 +48,7 @@ namespace api.Controllers
         [HttpGet("{id}/eager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [Cached(180)]
         public async Task<ActionResult<ProductDto>> GetProductEager(int id)
         {
             // var product = await _productRepository.GetProductByIdEagerAsync(id);
@@ -76,6 +78,7 @@ namespace api.Controllers
         }
 
         [HttpGet("eager")]
+        [Cached(180)]
         public async Task<ActionResult<Pagination<IReadOnlyList<ProductDto>>>> GetProductsEager([FromQuery]ProductSpecParams productParams)
         {
             // var products = await _productRepository.GetProductsEagerAsync();
@@ -91,6 +94,7 @@ namespace api.Controllers
         }
 
         [HttpGet("brands")]
+        [Cached(180)]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>>
         GetProductBrands()
         {
@@ -102,6 +106,7 @@ namespace api.Controllers
         }
 
         [HttpGet("types")]
+        [Cached(180)]
         public async Task<ActionResult<IReadOnlyList<ProductType>>>
         GetProductTypes()
         {
